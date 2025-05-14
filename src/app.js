@@ -1,10 +1,12 @@
-let projects = JSON.parse(localStorage.getItem('projects')) || [];
+import { db, ref, set, get, child } from "./firebase-init.js";
+
+let projects = [];
 
 function displayProjects() {
   const list = document.getElementById('projectList');
   list.innerHTML = '';
 
-  projects.forEach((project, index) => {
+  projects.forEach((project) => {
     const li = document.createElement('li');
     li.textContent = project.name;
     list.appendChild(li);
@@ -26,10 +28,31 @@ function saveProject() {
     return;
   }
 
-  projects.push({ name });
-  localStorage.setItem('projects', JSON.stringify(projects));
-  closeProjectDialog();
-  displayProjects();
+  const newProject = { name };
+  projects.push(newProject);
+
+  set(ref(db, 'projects'), projects)
+    .then(() => {
+      closeProjectDialog();
+      displayProjects();
+    })
+    .catch((error) => {
+      alert('Kunne ikke lagre til Firebase: ' + error);
+    });
 }
 
-window.onload = displayProjects;
+function loadProjects() {
+  get(child(ref(db), 'projects')).then((snapshot) => {
+    if (snapshot.exists()) {
+      projects = snapshot.val();
+      displayProjects();
+    } else {
+      projects = [];
+      displayProjects();
+    }
+  }).catch((error) => {
+    console.error("Feil ved lasting fra Firebase:", error);
+  });
+}
+
+window.onload = loadProjects;
