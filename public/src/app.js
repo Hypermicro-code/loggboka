@@ -1,5 +1,7 @@
 import { db, ref, set, push, onValue, remove, update } from "./firebase-init.js";
+import { ref, push, set, get, child } from "./firebase-init.js";
 
+const db = ref(database); // referanse til root
 let currentProjectId = null;
 
 // Last inn og vis prosjekter
@@ -67,7 +69,44 @@ function deleteProject(projectId) {
         remove(ref(db, `projects/${projectId}`));
     }
 }
+function createArea(projectId, areaName) {
+    const areaRef = ref(database, `projects/${projectId}/areas`);
+    const newAreaRef = push(areaRef);
+    set(newAreaRef, {
+        name: areaName,
+        createdAt: new Date().toISOString()
+    }).then(() => {
+        alert("Område opprettet!");
+        loadAreas(projectId);
+    });
+}
 
+function loadAreas(projectId) {
+    const areasRef = ref(database, `projects/${projectId}/areas`);
+    get(areasRef).then((snapshot) => {
+        const areas = snapshot.val();
+        displayAreas(areas, projectId);
+    });
+}
+
+function displayAreas(areas, projectId) {
+    const list = document.getElementById('areaList');
+    list.innerHTML = '';
+
+    if (!areas) {
+        list.innerHTML = '<li>Ingen områder registrert.</li>';
+        return;
+    }
+
+    Object.entries(areas).forEach(([key, area]) => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+            ${area.name}
+            <button onclick="alert('Funksjon for å vise bilder og notater her')">Åpne</button>
+        `;
+        list.appendChild(li);
+    });
+}
 window.onload = loadProjects;
 window.createProject = createProject;
 window.editProject = editProject;
