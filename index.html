@@ -1,1 +1,32 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loggboka</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Loggboka</h1>
+    <button onclick="openProjectDialog()">➕ Nytt prosjekt</button>
+  </header>
+  <main id="content">
+    <ul id="projectList"></ul>
+  </main>
+
+  <!-- Dialog for nytt prosjekt -->
+  <div id="projectDialog" class="dialog-overlay" style="display:none;">
+    <div class="dialog-box">
+      <h3>Nytt prosjekt</h3>
+      <label>Prosjektnavn:</label><br>
+      <input type="text" id="projectName"><br><br>
+      <button onclick="saveProject()">Lagre</button>
+      <button onclick="closeProjectDialog()">Avbryt</button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
 
